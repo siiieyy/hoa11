@@ -1,0 +1,51 @@
+---
+- hosts: all
+  become: true
+  pre_tasks:
+
+  - name: install docker
+    apt:
+      name: docker
+      state: present
+    when: ansible_distribution == "Ubuntu"
+
+  - name: install docker
+    yum:
+      name: docker
+      state: present
+    when: ansible_distribution == "CentOS"
+
+  - name: install docker sdk
+    shell:
+      pip3 install docker-py
+
+  - name: add docker to user group
+    shell:
+      usermod -aG docker workstation
+
+  - name: dockerfile directory 
+    file:
+      path: /root/demo-dockerfile
+      state: directory
+      owner: root
+      group: root
+      mode: '0755'
+
+  - name: copy dockerfile
+    copy:
+      src: dockerfile1
+      dest: /root/demo-dockerfile/dockerfile
+      owner: root
+      group: root
+      mode: '0755'
+    when: ansible_distribution == "Ubuntu"
+
+
+  - name: copy dockerfile
+    copy:
+      src: dockerfile2
+      dest: /root/demo-dockerfile/dockerfile
+      owner: root
+      group: root
+      mode: '0755'
+    when: ansible_distribution == "CentOS"
